@@ -67,6 +67,9 @@
                                 @elseif($transaksi->status == 'batal')
                                     <span class="badge badge-danger">Batal</span>
                                 @endif
+                                @if($transaksi->note)
+                                <br><b>Catatan:</b> {{ $transaksi->note }}
+                                @endif
                             </div>
                         </div>
 
@@ -78,8 +81,10 @@
                                         <tr>
                                             <th>#</th>
                                             <th>Produk</th>
+                                            <th>Panjang</th>
+                                            <th>Lebar</th>
+                                            <th>Luas (Satuan)</th>
                                             <th>Qty</th>
-                                            <th>Satuan</th>
                                             <th>Harga</th>
                                             <th>Subtotal</th>
                                         </tr>
@@ -89,8 +94,10 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>{{ $detail->produk->nama }}</td>
+                                            <td>{{ $detail->panjang > 0 ? $detail->panjang : '-' }}</td>
+                                            <td>{{ $detail->lebar > 0 ? $detail->lebar : '-' }}</td>
+                                            <td>{{ $detail->luas > 0 ? $detail->luas . ' (' . $detail->produk->satuan->nama . ')' : '-' }}</td>
                                             <td>{{ $detail->qty }}</td>
-                                            <td>{{ $detail->produk->satuan->nama }}</td>
                                             <td>Rp {{ number_format($detail->harga, 0, ',', '.') }}</td>
                                             <td>Rp {{ number_format($detail->jumlah, 0, ',', '.') }}</td>
                                         </tr>

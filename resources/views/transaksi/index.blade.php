@@ -63,6 +63,7 @@
                         <th style="width: 10px">#</th>
                         <th style="width: 100px">Tanggal</th>
                         <th>Pelanggan</th>
+                        <th>Catatan</th>
                         <th style="width: 150px">Total</th>
                         <th style="width: 150px">Diskon</th>
                         <th style="width: 150px">Total Bayar</th>
@@ -76,6 +77,15 @@
                             <td>{{ $key + 1 }}</td>
                             <td>{{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d-m-Y') }}</td>
                             <td>{{ $transaksi->nama_pelanggan ?? 'Umum' }}</td>
+                            <td>
+                                @if($transaksi->note)
+                                    <span class="text-muted" title="{{ $transaksi->note }}">
+                                        {{ Str::limit($transaksi->note, 30) }}
+                                    </span>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($transaksi->diskon ?? 0, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($transaksi->total_bayar, 0, ',', '.') }}</td>
@@ -111,7 +121,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">Tidak ada data</td>
+                            <td colspan="9" class="text-center">Tidak ada data</td>
                         </tr>
                     @endforelse
                 </tbody>

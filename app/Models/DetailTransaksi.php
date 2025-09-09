@@ -16,6 +16,7 @@ class DetailTransaksi extends Model
         'produk_id',
         'panjang',
         'lebar',
+        'luas',
         'qty',
         'harga',
         'jumlah'

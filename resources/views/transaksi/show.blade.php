@@ -70,6 +70,10 @@
                             <td>Rp {{ number_format($transaksi->total_bayar, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
+                            <th>Catatan</th>
+                            <td>{{ $transaksi->note ?? '-' }}</td>
+                        </tr>
+                        <tr>
                             <th>Dibuat pada</th>
                             <td>{{ $transaksi->created_at->format('d-m-Y H:i:s') }}</td>
                         </tr>
@@ -90,6 +94,7 @@
                                     <th>Produk</th>
                                     <th>Panjang</th>
                                     <th>Lebar</th>
+                                    <th>Luas</th>
                                     <th>Qty</th>
                                     <th>Satuan</th>
                                     <th>Harga</th>
@@ -103,6 +108,7 @@
                                         <td>{{ $detail->produk->nama }}</td>
                                         <td>{{ $detail->panjang > 0 ? $detail->panjang : '-' }}</td>
                                         <td>{{ $detail->lebar > 0 ? $detail->lebar : '-' }}</td>
+                                        <td>{{ $detail->luas > 0 ? $detail->luas : '-' }}</td>
                                         <td>{{ $detail->qty }}</td>
                                         <td>{{ $detail->produk->satuan->nama }}</td>
                                         <td>Rp {{ number_format($detail->harga, 0, ',', '.') }}</td>
@@ -110,21 +116,21 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center">Tidak ada data detail transaksi</td>
+                                        <td colspan="9" class="text-center">Tidak ada data detail transaksi</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th colspan="7" class="text-right">Total:</th>
+                                    <th colspan="8" class="text-right">Total:</th>
                                     <th>Rp {{ number_format($transaksi->total, 0, ',', '.') }}</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="7" class="text-right">Diskon:</th>
+                                    <th colspan="8" class="text-right">Diskon:</th>
                                     <th>Rp {{ number_format($transaksi->diskon ?? 0, 0, ',', '.') }}</th>
                                 </tr>
                                 <tr>
-                                    <th colspan="7" class="text-right">Total Bayar:</th>
+                                    <th colspan="8" class="text-right">Total Bayar:</th>
                                     <th>Rp {{ number_format($transaksi->total_bayar, 0, ',', '.') }}</th>
                                 </tr>
                             </tfoot>

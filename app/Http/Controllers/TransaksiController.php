@@ -69,6 +69,7 @@ class TransaksiController extends Controller
             'total' => 'required|integer|min:0',
             'diskon' => 'nullable|integer|min:0',
             'total_bayar' => 'required|integer|min:0',
+            'note' => 'nullable|string',
             'status' => 'required|string|in:pending,selesai,batal',
             'produk_id' => 'required|array',
             'produk_id.*' => 'exists:produk,id',
@@ -76,6 +77,8 @@ class TransaksiController extends Controller
             'panjang.*' => 'numeric|min:0',
             'lebar' => 'required|array',
             'lebar.*' => 'numeric|min:0',
+            'luas' => 'nullable|array',
+            'luas.*' => 'nullable|numeric|min:0',
             'qty' => 'required|array',
             'qty.*' => 'numeric|min:0.01',
             'harga' => 'required|array',
@@ -99,6 +102,7 @@ class TransaksiController extends Controller
                 'total' => $request->total,
                 'diskon' => $request->diskon,
                 'total_bayar' => $request->total_bayar,
+                'note' => $request->note,
                 'status' => $request->status,
             ]);
 
@@ -106,16 +110,21 @@ class TransaksiController extends Controller
             $produk_ids = $request->produk_id;
             $panjangs = $request->panjang;
             $lebars = $request->lebar;
+            $luass = $request->luas ?? [];
             $qtys = $request->qty;
             $hargas = $request->harga;
             $jumlahs = $request->jumlah;
 
             foreach ($produk_ids as $key => $produk_id) {
+                // Hitung luas otomatis jika tidak diisi
+                $luas = isset($luass[$key]) && $luass[$key] ? $luass[$key] : ($panjangs[$key] * $lebars[$key]);
+                
                 DetailTransaksi::create([
                     'transaksi_id' => $transaksi->id,
                     'produk_id' => $produk_id,
                     'panjang' => $panjangs[$key],
                     'lebar' => $lebars[$key],
+                    'luas' => $luas,
                     'qty' => $qtys[$key],
                     'harga' => $hargas[$key],
                     'jumlah' => $jumlahs[$key],
@@ -165,6 +174,7 @@ class TransaksiController extends Controller
             'total' => 'required|integer|min:0',
             'diskon' => 'nullable|integer|min:0',
             'total_bayar' => 'required|integer|min:0',
+            'note' => 'nullable|string',
             'status' => 'required|string|in:pending,selesai,batal',
         ]);
 
@@ -180,6 +190,7 @@ class TransaksiController extends Controller
             'total' => $request->total,
             'diskon' => $request->diskon,
             'total_bayar' => $request->total_bayar,
+            'note' => $request->note,
             'status' => $request->status,
         ]);
 
@@ -312,6 +323,8 @@ class TransaksiController extends Controller
             'panjang.*' => 'numeric|min:0',
             'lebar' => 'required|array',
             'lebar.*' => 'numeric|min:0',
+            'luas' => 'nullable|array',
+            'luas.*' => 'nullable|numeric|min:0',
             'qty' => 'required|array',
             'qty.*' => 'numeric|min:0',
             'harga' => 'required|array',
@@ -331,6 +344,7 @@ class TransaksiController extends Controller
             $produk_ids = $request->produk_id;
             $panjangs = $request->panjang;
             $lebars = $request->lebar;
+            $luass = $request->luas ?? [];
             $qtys = $request->qty;
             $hargas = $request->harga;
             $jumlahs = $request->jumlah;
@@ -338,11 +352,15 @@ class TransaksiController extends Controller
             $totalBaru = 0;
             
             foreach ($produk_ids as $key => $produk_id) {
+                // Hitung luas otomatis jika tidak diisi
+                $luas = isset($luass[$key]) && $luass[$key] ? $luass[$key] : ($panjangs[$key] * $lebars[$key]);
+                
                 DetailTransaksi::create([
                     'transaksi_id' => $transaksi->id,
                     'produk_id' => $produk_id,
                     'panjang' => $panjangs[$key],
                     'lebar' => $lebars[$key],
+                    'luas' => $luas,
                     'qty' => $qtys[$key],
                     'harga' => $hargas[$key],
                     'jumlah' => $jumlahs[$key],

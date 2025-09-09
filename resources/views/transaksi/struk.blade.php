@@ -85,6 +85,9 @@
             <p>Tanggal: {{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d/m/Y H:i') }}</p>
             <p>Kasir: {{ auth()->user()->name ?? 'Admin' }}</p>
             <p>Pelanggan: {{ $transaksi->nama_pelanggan ?? 'Umum' }}</p>
+            @if($transaksi->note)
+            <p>Catatan: {{ $transaksi->note }}</p>
+            @endif
         </div>
 
         <div class="divider"></div>
@@ -93,6 +96,9 @@
             <thead>
                 <tr>
                     <th>Item</th>
+                    <th>P</th>
+                    <th>L</th>
+                    <th>Luas</th>
                     <th>Qty</th>
                     <th>Harga</th>
                     <th>Total</th>
@@ -102,7 +108,10 @@
                 @foreach($transaksi->detailTransaksi as $detail)
                 <tr>
                     <td>{{ $detail->produk->nama }}</td>
-                    <td>{{ $detail->qty }} {{ $detail->produk->satuan->nama }}</td>
+                    <td>{{ $detail->panjang > 0 ? $detail->panjang : '-' }}</td>
+                    <td>{{ $detail->lebar > 0 ? $detail->lebar : '-' }}</td>
+                    <td>{{ $detail->luas > 0 ? $detail->luas . ' (' . $detail->produk->satuan->nama . ')' : '-' }}</td>
+                    <td>{{ $detail->qty }}</td>
                     <td>{{ number_format($detail->harga, 0, ',', '.') }}</td>
                     <td>{{ number_format($detail->jumlah, 0, ',', '.') }}</td>
                 </tr>

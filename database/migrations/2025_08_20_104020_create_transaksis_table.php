@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('total');
             $table->integer('diskon')->nullable();
             $table->integer('total_bayar');
+            $table->string('metode_pembayaran');
             $table->string('status');
             $table->timestamps();
             $table->softDeletes();

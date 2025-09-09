@@ -46,6 +46,18 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="note">Catatan</label>
+                            <textarea class="form-control @error('note') is-invalid @enderror" id="note" name="note" rows="3" placeholder="Catatan tambahan untuk transaksi ini (opsional)">{{ old('note', $transaksi->note) }}</textarea>
+                            @error('note')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card mt-3">
                     <div class="card-header bg-light">
                         <h3 class="card-title">Detail Produk</h3>
@@ -68,6 +80,7 @@
                                         <th>Produk</th>
                                         <th>Panjang</th>
                                         <th>Lebar</th>
+                                        <th>Luas</th>
                                         <th>Qty</th>
                                         <th>Harga</th>
                                         <th>Jumlah</th>
@@ -80,6 +93,7 @@
                                             <td>{{ $detail->produk->nama }}</td>
                                             <td>{{ $detail->panjang > 0 ? $detail->panjang : '-' }}</td>
                                             <td>{{ $detail->lebar > 0 ? $detail->lebar : '-' }}</td>
+                                            <td>{{ $detail->luas > 0 ? $detail->luas : '-' }}</td>
                                             <td>{{ $detail->qty }}</td>
                                             <td>Rp {{ number_format($detail->harga, 0, ',', '.') }}</td>
                                             <td>Rp {{ number_format($detail->jumlah, 0, ',', '.') }}</td>
@@ -190,7 +204,8 @@
                                         <th>Produk</th>
                                         <th>Panjang</th>
                                         <th>Lebar</th>
-                                        <th>Qty (Otomatis)</th>
+                                        <th>Luas</th>
+                                        <th>Qty</th>
                                         <th>Harga</th>
                                         <th>Jumlah</th>
                                         <th>Aksi</th>
@@ -238,7 +253,10 @@
                 <input type="number" class="form-control lebar-input-modal" name="lebar[]" value="0" min="0" step="0.01" placeholder="Lebar" required>
             </td>
             <td>
-                <input type="number" class="form-control qty-input-modal" name="qty[]" value="0" readonly>
+                <input type="number" class="form-control luas-input-modal" name="luas[]" value="0" min="0" step="0.01" placeholder="Luas (otomatis)">
+            </td>
+            <td>
+                <input type="number" class="form-control qty-input-modal" name="qty[]" value="1" min="0" step="0.01" placeholder="Qty">
             </td>
             <td>
                 <input type="number" class="form-control harga-input-modal" name="harga[]" value="0" readonly>
@@ -299,30 +317,44 @@
                 updateJumlahModal(row);
             });
             
-            // Update qty dan jumlah saat panjang atau lebar berubah di modal
+            // Update luas dan jumlah saat panjang atau lebar berubah di modal
             $(document).on('input', '.panjang-input-modal, .lebar-input-modal', function() {
                 const row = $(this).closest('tr');
-                updateQtyModal(row);
+                updateLuasModal(row);
                 updateJumlahModal(row);
             });
             
-            // Fungsi untuk menghitung qty dari panjang x lebar di modal
-            function updateQtyModal(row) {
+            // Update jumlah saat luas berubah manual di modal
+            $(document).on('input', '.luas-input-modal', function() {
+                const row = $(this).closest('tr');
+                updateJumlahModal(row);
+            });
+            
+            // Update jumlah saat qty berubah di modal
+            $(document).on('input', '.qty-input-modal', function() {
+                const row = $(this).closest('tr');
+                updateJumlahModal(row);
+            });
+            
+            // Fungsi untuk menghitung luas dari panjang x lebar di modal
+            function updateLuasModal(row) {
                 const panjang = parseFloat(row.find('.panjang-input-modal').val()) || 0;
                 const lebar = parseFloat(row.find('.lebar-input-modal').val()) || 0;
                 
-                // Qty adalah hasil dari panjang x lebar
-                const qty = panjang * lebar;
-                row.find('.qty-input-modal').val(qty.toFixed(2));
+                // Luas adalah hasil dari panjang x lebar
+                const luas = panjang * lebar;
+                row.find('.luas-input-modal').val(luas.toFixed(2));
             }
+            
             
             // Fungsi untuk menghitung jumlah per baris di modal
             function updateJumlahModal(row) {
+                const luas = parseFloat(row.find('.luas-input-modal').val()) || 0;
                 const qty = parseFloat(row.find('.qty-input-modal').val()) || 0;
                 const harga = parseFloat(row.find('.harga-input-modal').val()) || 0;
                 
-                // Jumlah adalah qty x harga
-                const jumlah = qty * harga;
+                // Jumlah adalah luas x harga x qty
+                const jumlah = luas * harga * qty;
                 row.find('.jumlah-input-modal').val(jumlah);
                 hitungTotalModal();
             }

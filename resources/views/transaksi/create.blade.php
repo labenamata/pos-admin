@@ -45,6 +45,18 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="note">Catatan</label>
+                            <textarea class="form-control @error('note') is-invalid @enderror" id="note" name="note" rows="3" placeholder="Catatan tambahan untuk transaksi ini (opsional)">{{ old('note') }}</textarea>
+                            @error('note')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card mt-3">
                     <div class="card-header bg-light">
                         <h3 class="card-title">Detail Produk</h3>
@@ -65,7 +77,8 @@
                                         <th>Produk</th>
                                         <th>Panjang</th>
                                         <th>Lebar</th>
-                                        <th>Qty (Otomatis)</th>
+                                        <th>Luas</th>
+                                        <th>Qty</th>
                                         <th>Harga</th>
                                         <th>Jumlah</th>
                                         <th>Aksi</th>
@@ -159,7 +172,10 @@
                 <input type="number" class="form-control lebar-input" name="lebar[]" value="0" min="0" step="0.01" placeholder="Lebar" required>
             </td>
             <td>
-                <input type="number" class="form-control qty-input" name="qty[]" value="0" readonly>
+                <input type="number" class="form-control luas-input" name="luas[]" value="0" min="0" step="0.01" placeholder="Luas (otomatis)">
+            </td>
+            <td>
+                <input type="number" class="form-control qty-input" name="qty[]" value="1" min="0" step="0.01" placeholder="Qty">
             </td>
             <td>
                 <input type="number" class="form-control harga-input" name="harga[]" value="0" readonly>
@@ -209,10 +225,22 @@
                 updateJumlah(row);
             });
             
-            // Update qty dan jumlah saat panjang atau lebar berubah
+            // Update luas dan jumlah saat panjang atau lebar berubah
             $(document).on('input', '.panjang-input, .lebar-input', function() {
                 const row = $(this).closest('tr');
-                updateQty(row);
+                updateLuas(row);
+                updateJumlah(row);
+            });
+            
+            // Update jumlah saat luas berubah manual
+            $(document).on('input', '.luas-input', function() {
+                const row = $(this).closest('tr');
+                updateJumlah(row);
+            });
+            
+            // Update jumlah saat qty berubah
+            $(document).on('input', '.qty-input', function() {
+                const row = $(this).closest('tr');
                 updateJumlah(row);
             });
             
@@ -221,23 +249,25 @@
                 hitungTotal();
             });
             
-            // Fungsi untuk menghitung qty dari panjang x lebar
-            function updateQty(row) {
+            // Fungsi untuk menghitung luas dari panjang x lebar
+            function updateLuas(row) {
                 const panjang = parseFloat(row.find('.panjang-input').val()) || 0;
                 const lebar = parseFloat(row.find('.lebar-input').val()) || 0;
                 
-                // Qty adalah hasil dari panjang x lebar
-                const qty = panjang * lebar;
-                row.find('.qty-input').val(qty.toFixed(2));
+                // Luas adalah hasil dari panjang x lebar
+                const luas = panjang * lebar;
+                row.find('.luas-input').val(luas.toFixed(2));
             }
+            
             
             // Fungsi untuk menghitung jumlah per baris
             function updateJumlah(row) {
+                const luas = parseFloat(row.find('.luas-input').val()) || 0;
                 const qty = parseFloat(row.find('.qty-input').val()) || 0;
                 const harga = parseFloat(row.find('.harga-input').val()) || 0;
                 
-                // Jumlah adalah qty x harga
-                const jumlah = qty * harga;
+                // Jumlah adalah luas x harga x qty
+                const jumlah = luas * harga * qty;
                 row.find('.jumlah-input').val(jumlah);
                 hitungTotal();
             }

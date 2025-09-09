@@ -18,6 +18,7 @@ class Transaksi extends Model
         'diskon',
         'total_bayar',
         'metode_pembayaran',
+        'note',
         'status'
     ];
     
